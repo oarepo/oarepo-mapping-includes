@@ -3,10 +3,12 @@ import json
 import os
 
 import pkg_resources
-from jsonpointer import JsonPointer
-from pkg_resources import iter_entry_points, resource_listdir
-
 from elasticsearch import VERSION as ES_VERSION
+from invenio_base.signals import app_loaded
+from invenio_jsonschemas.utils import _merge_dicts
+from jsonpointer import JsonPointer
+from jsonref import JsonRef
+from pkg_resources import iter_entry_points
 
 
 def patch_elasticsearch():
@@ -67,6 +69,44 @@ def patch_elasticsearch():
 
 
 patch_elasticsearch()
+
+
+@app_loaded.connect
+def patch_jsonschemas(_sender, app, **kwargs):
+    with app.app_context():
+        from invenio_records.api import _records_state
+
+        # patched version of invenio_jsonschemas.utils.resolve_schema
+        def resolve_schema(schema):
+            def traverse(schema):
+                if isinstance(schema, dict):
+                    if 'allOf' in schema:
+                        all_of = schema.pop('allOf')
+                        for x in all_of:
+                            sub_schema = x
+                            sub_schema.pop('title', None)
+                            schema = _merge_dicts(schema, sub_schema)
+                        schema = traverse(schema)
+                    elif 'properties' in schema:
+                        for x in schema.get('properties', []):
+                            schema['properties'][x] = traverse(
+                                schema['properties'][x])
+                    elif 'items' in schema:
+                        schema['items'] = traverse(schema['items'])
+                return schema
+            return traverse(schema)
+
+        def patched_validate(data, schema, *args, **kwargs):
+            if not isinstance(schema, dict):
+                schema = {'$ref': schema}
+            schema = JsonRef.replace_refs(schema, loader=_records_state.loader_cls())
+            schema = resolve_schema(schema)
+            return previous_validate(data, schema, *args, **kwargs)
+
+        if _records_state.validate != patched_validate:
+            previous_validate = _records_state.validate
+            _records_state.validate = patched_validate
+
 
 # do not export anything
 __all__ = ()
