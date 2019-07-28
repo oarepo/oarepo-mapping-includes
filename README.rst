@@ -80,5 +80,26 @@ In ES mapping you can now include types contained in `multilingual-v1.0.0.json`:
 The `type` contains the file name of the json file followed by `#` and json pointer
 to the definition.
 
+If you want to include properties from multiple types in your properties, you can
+use the `allOf` directive::
+
+      {
+        "mappings": {
+          "_doc": {
+            "allOf": [
+               { "type": "invenio-v1.0.0.json#/InvenioRecord" },
+               { "type": "dcterms-v1.0.0.json#/DCObject" }
+            ],
+            "properties": {
+              "prop": {
+                "type": "keyword"
+              },
+            }
+          }
+        }
+      }
+
+Doing so will include all properties from all referenced types in your mappings properties.
+
 When `invenio index init` is run, the mapping is preprocessed, "type" is dereferenced
 and the definition is replaced with the content found in the referenced type.

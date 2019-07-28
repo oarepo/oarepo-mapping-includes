@@ -1,7 +1,7 @@
 Changes
 =======
 
-[Version 3.1.0]
+[Version 1.1.0]
 ===============
 
-  - Added Permission factories
+  - Added 'allOf' mapping directive support

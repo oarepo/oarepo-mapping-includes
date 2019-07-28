@@ -61,6 +61,15 @@ def patch_elasticsearch():
                 included_mapping_type = ptr.resolve(mapping)
                 el.update(included_mapping_type)
 
+        for el in item_generator(kwargs['body'], 'allOf'):
+            if 'properties' in el:
+                props = {}
+                for el_type in el['allOf']:
+                    props.update(el_type.get('properties', {}))
+
+                el['properties'].update(props)
+                el.pop('allOf')
+
         ret = old_create_method(*args, **kwargs)
         print(ret)
         return ret
