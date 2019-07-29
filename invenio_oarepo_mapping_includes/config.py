@@ -36,39 +36,42 @@ def patch_elasticsearch():
         return load_included_mappings()[mapping_name]
 
     def create(*args, **kwargs):
+        def _resolve_mappings(body):
+            # from: https://stackoverflow.com/a/39016088
+            def item_generator(json_input, lookup_key):
+                if isinstance(json_input, dict):
+                    for k, v in list(json_input.items()):
+                        if k == lookup_key:
+                            yield json_input
+                        else:
+                            yield from item_generator(v, lookup_key)
 
-        # from: https://stackoverflow.com/a/39016088
-        def item_generator(json_input, lookup_key):
-            if isinstance(json_input, dict):
-                for k, v in list(json_input.items()):
-                    if k == lookup_key:
-                        yield json_input
-                    else:
-                        yield from item_generator(v, lookup_key)
+                elif isinstance(json_input, list):
+                    for item in json_input:
+                        yield from item_generator(item, lookup_key)
 
-            elif isinstance(json_input, list):
-                for item in json_input:
-                    yield from item_generator(item, lookup_key)
+            for el in item_generator(body, 'type'):
+                if '#' in el['type']:
+                    # referenced type - split it into filename and jsonpointer
+                    el_type = el['type'].split('#', maxsplit=1)
 
-        for el in item_generator(kwargs['body'], 'type'):
-            if '#' in el['type']:
-                # referenced type - split it into filename and jsonpointer
-                el_type = el['type'].split('#', maxsplit=1)
+                    # get mapping from loaded mappings
+                    mapping = included_mappings(el_type[0])
+                    ptr = JsonPointer(el_type[1])
+                    included_mapping_type = ptr.resolve(mapping)
+                    _resolve_mappings(included_mapping_type)
+                    el.update(included_mapping_type)
 
-                # get mapping from loaded mappings
-                mapping = included_mappings(el_type[0])
-                ptr = JsonPointer(el_type[1])
-                included_mapping_type = ptr.resolve(mapping)
-                el.update(included_mapping_type)
+            for el in item_generator(body, 'allOf'):
+                if 'properties' in el:
+                    props = {}
+                    for el_type in el['allOf']:
+                        props.update(el_type.get('properties', {}))
 
-        for el in item_generator(kwargs['body'], 'allOf'):
-            if 'properties' in el:
-                props = {}
-                for el_type in el['allOf']:
-                    props.update(el_type.get('properties', {}))
+                    el['properties'].update(props)
+                    el.pop('allOf')
 
-                el['properties'].update(props)
-                el.pop('allOf')
+        _resolve_mappings(kwargs['body'])
 
         ret = old_create_method(*args, **kwargs)
         print(ret)
