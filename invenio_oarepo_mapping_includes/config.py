@@ -97,6 +97,7 @@ def patch_jsonschemas(_sender, app, **kwargs):
                         for x in all_of:
                             sub_schema = x
                             sub_schema.pop('title', None)
+                            sub_schema.pop('$id', None)
                             schema = _merge_dicts(schema, sub_schema)
                         schema = traverse(schema)
                     elif 'properties' in schema:
