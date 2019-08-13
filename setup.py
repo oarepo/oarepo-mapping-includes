@@ -32,6 +32,12 @@ setup(
         'invenio_config.module': [
             'invenio_oarepo_mapping_includes = invenio_oarepo_mapping_includes.config',
         ],
+        'invenio_base.apps': [
+            'invenio_oarepo_mapping_includes = invenio_oarepo_mapping_includes.ext:InvenioOARepoMappingIncludesExt'
+        ],
+        'invenio_base.api_apps': [
+            'invenio_oarepo_mapping_includes = invenio_oarepo_mapping_includes.ext:InvenioOARepoMappingIncludesExt'
+        ]
     },
     include_package_data=True,
     setup_requires=install_requires,
