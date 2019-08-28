@@ -60,7 +60,8 @@ def patch_elasticsearch():
                     ptr = JsonPointer(el_type[1])
                     included_mapping_type = ptr.resolve(mapping)
                     _resolve_mappings(included_mapping_type)
-                    el.update(included_mapping_type)
+                    merged = _merge_dicts(el, included_mapping_type)
+                    el.update(merged)
 
             for el in item_generator(body, 'allOf'):
                 if 'properties' in el:
