@@ -10,7 +10,7 @@ DATABASE = "postgresql"
 INVENIO_VERSION = "3.1.0"
 
 install_requires = [
-    'elasticsearch>=6.0.0,<7'
+    'elasticsearch<8.0.0,>=7.0.0'
 ]
 
 g = {}

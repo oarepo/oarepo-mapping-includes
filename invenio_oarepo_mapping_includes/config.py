@@ -5,7 +5,6 @@ import os
 import pkg_resources
 from elasticsearch import VERSION as ES_VERSION
 from invenio_base.signals import app_loaded
-from invenio_jsonschemas.utils import _merge_dicts
 from jsonpointer import JsonPointer
 from jsonref import JsonRef
 from pkg_resources import iter_entry_points
