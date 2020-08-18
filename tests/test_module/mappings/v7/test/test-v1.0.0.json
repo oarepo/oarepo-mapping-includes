@@ -1,0 +1,27 @@
+{
+  "mappings": {
+    "date_detection": false,
+    "numeric_detection": false,
+    "dynamic": false,
+    "properties": {
+      "$schema": {
+        "type": "keyword",
+        "index": true
+      },
+      "test": {
+        "type": "included-v1.0.0.json#/test"
+      },
+      "nested": {
+        "type": "included-v1.0.0.json#/nested"
+      },
+      "nested2": {
+        "type": "object",
+        "properties": {
+          "test": {
+            "type": "included-v1.0.0.json#/test"
+          }
+        }
+      }
+    }
+  }
+}

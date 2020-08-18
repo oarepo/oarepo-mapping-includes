@@ -7,10 +7,18 @@ from setuptools import setup
 readme = open('README.rst').read()
 
 DATABASE = "postgresql"
-INVENIO_VERSION = "3.1.0"
 
 install_requires = [
-    'elasticsearch>=6.0.0,<7'
+    'elasticsearch',
+    'requests',
+    'deepmerge'
+]
+
+tests_require = [
+    'invenio[base,metadata,sqlite,elasticsearch7]',
+    'pytest',
+    'pytest-cov',
+    'pytest-pep8'
 ]
 
 g = {}
@@ -42,6 +50,7 @@ setup(
     include_package_data=True,
     setup_requires=install_requires,
     install_requires=install_requires,
+    tests_require=tests_require,
     platforms='any',
     classifiers=[
         'Environment :: Web Environment',
@@ -51,10 +60,8 @@ setup(
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.8',
         'Development Status :: 4 - Beta',
     ],
 )

@@ -1,0 +1,13 @@
+{
+  "test": {
+    "type": "string"
+  },
+  "nested": {
+    "type": "object",
+    "properties": {
+      "test": {
+        "type": "dynamic#dynamic-test"
+      }
+    }
+  }
+}
