@@ -1,11 +1,8 @@
 # OAREPO mapping includes
 
 [![image][]][1]
-
 [![image][2]][3]
-
 [![image][4]][5]
-
 [![image][6]][7]
 
 This package adds support for inclusions in elasticsearch mappings.
