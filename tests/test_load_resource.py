@@ -43,8 +43,8 @@ def test_http(app):
     includes = app.extensions['oarepo-mapping-includes']
 
     with requests_mock.Mocker() as m:
-        m.get('http://test.com/included#blah', text='{"$id": "blah", "included": true}')
-        assert includes.load_type('http://test.com/included',
+        m.get('http://test.com/included', text='{"a": {"$id": "blah", "included": true}}')
+        assert includes.load_type('http://test.com/included#blah',
                                   content={}, root={}, content_pointer='') == {
             'included': True
         }
