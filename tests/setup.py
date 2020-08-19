@@ -13,7 +13,8 @@ setup(
             "test = test_module.mapping_includes"
         ],
         "invenio_oarepo_mapping_handlers": [
-            "dynamic = test_module.mapping_handlers:dynamic"
+            "dynamic = test_module.mapping_handlers:dynamic",
+            "dynamic2 = test_module.mapping_handlers:dynamic2"
         ]
     },
     include_package_data=True,

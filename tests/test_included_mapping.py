@@ -34,6 +34,9 @@ def test_ids():
         }
     })
 
+    assert m.get_id('') == m.json
+    assert m.get_id(None) == m.json
+
     assert m.get_id('aa') == {
         'b': {
             'test': '1'

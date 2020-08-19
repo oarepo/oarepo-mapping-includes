@@ -26,3 +26,9 @@ def dynamic(type=None, resource=None, id=None, json_pointer=None,
             }
         }
     }
+
+
+def dynamic2(**kwargs):
+    return {
+        'dynamic2': True
+    }

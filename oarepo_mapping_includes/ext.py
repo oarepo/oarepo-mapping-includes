@@ -119,7 +119,7 @@ class OARepoMappingIncludesState:
         try:
             mapping = mappings[resource]
         except KeyError:
-            if not json_pointer:
+            if not json_pointer and not idd:
                 return None
             raise KeyError('%s not in %s' % (resource, list(sorted(mappings.keys()))))
 
