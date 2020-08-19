@@ -25,7 +25,38 @@ def test_included_pt(app):
                         "test": {
                             'properties': {
                                 'dynamic-test': {
-                                    'type': 'string'
+                                    'type': 'string',
+                                    'extra': {
+                                        'content': {},
+                                        'content_pointer': '/mappings/properties/nested/properties/test',
+                                        'id': 'dynamic-test',
+                                        'json_pointer': None,
+                                        'resource': 'dynamic',
+                                        'type': 'dynamic#dynamic-test',
+                                        'root': {
+                                            'mappings': {
+                                                'date_detection': False,
+                                                'dynamic': False,
+                                                'numeric_detection': False,
+                                                'properties': {
+                                                    '$schema': {
+                                                        'index': True,
+                                                        'type': 'keyword'
+                                                    },
+                                                    'nested': {
+                                                        'properties': {'test': {}},
+                                                        'type': 'object'
+                                                    },
+                                                    'nested2': {
+                                                        'properties': {'test': {
+                                                            'type': 'included-v1.0.0.json#/test'}},
+                                                        'type': 'object'
+                                                    },
+                                                    'test': {'type': 'string'}
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             },
                             'type': 'object'

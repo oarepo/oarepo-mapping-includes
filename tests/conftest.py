@@ -1,7 +1,5 @@
-import shutil
-import subprocess
 import os
-import sys
+import shutil
 import tempfile
 
 import pytest
@@ -14,7 +12,7 @@ from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 from invenio_search import InvenioSearch
 
-from invenio_oarepo_mapping_includes.ext import InvenioOARepoMappingIncludesExt
+from oarepo_mapping_includes.ext import InvenioOARepoMappingIncludesExt
 
 
 @pytest.yield_fixture(scope="function")
