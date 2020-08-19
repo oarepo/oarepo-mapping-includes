@@ -15,14 +15,11 @@ class IncludedMapping:
     def __init__(self, name, json):
         self.name = name
         self.json = json
-        self.ids = None
+        self.build_ids()
 
     def get_id(self, idd):
         if not idd:
             return self.json
-
-        if self.ids is None:
-            self.build_ids()
         try:
             return self.ids[idd]
         except KeyError:
