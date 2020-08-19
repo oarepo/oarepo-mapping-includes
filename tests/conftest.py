@@ -12,7 +12,7 @@ from invenio_pidstore import InvenioPIDStore
 from invenio_records import InvenioRecords
 from invenio_search import InvenioSearch
 
-from oarepo_mapping_includes.ext import InvenioOARepoMappingIncludesExt
+from oarepo_mapping_includes.ext import OARepoMappingIncludesExt
 
 
 @pytest.yield_fixture(scope="function")
@@ -48,7 +48,7 @@ def app(request):
     InvenioPIDStore(app)
     InvenioSearch(app)
     InvenioIndexer(app)
-    InvenioOARepoMappingIncludesExt(app)
+    OARepoMappingIncludesExt(app)
 
     app_loaded.send(app, app=app)
 

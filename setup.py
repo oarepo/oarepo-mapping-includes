@@ -26,9 +26,9 @@ with open(os.path.join('oarepo_mapping_includes', 'version.py'), 'rt') as fp:
     version = g['__version__']
 
 setup(
-    name="oarepo_mapping_includes",
+    name="oarepo-mapping-includes",
     version=version,
-    url="https://github.com/oarepo/invenio-oarepo-mapping-includes",
+    url="https://github.com/oarepo/oarepo-mapping-includes",
     license="MIT",
     author="Miroslav Simek",
     author_email="miroslav.simek@vscht.cz",
@@ -38,14 +38,11 @@ setup(
     zip_safe=False,
     packages=['oarepo_mapping_includes'],
     entry_points={
-        'invenio_config.module': [
-            'invenio_oarepo_mapping_includes = invenio_oarepo_mapping_includes.config',
-        ],
         'invenio_base.apps': [
-            'invenio_oarepo_mapping_includes = invenio_oarepo_mapping_includes.ext:InvenioOARepoMappingIncludesExt'
+            'oarepo_mapping_includes = oarepo_mapping_includes.ext:OARepoMappingIncludesExt'
         ],
         'invenio_base.api_apps': [
-            'invenio_oarepo_mapping_includes = invenio_oarepo_mapping_includes.ext:InvenioOARepoMappingIncludesExt'
+            'oarepo_mapping_includes = oarepo_mapping_includes.ext:OARepoMappingIncludesExt'
         ]
     },
     include_package_data=True,

@@ -126,7 +126,7 @@ class OARepoMappingIncludesState:
             return mapping.get_pointer(json_pointer)
 
 
-class InvenioOARepoMappingIncludesExt:
+class OARepoMappingIncludesExt:
 
     def __init__(self, app=None):
         """Extension initialization."""
