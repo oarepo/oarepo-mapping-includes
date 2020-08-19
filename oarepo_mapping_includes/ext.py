@@ -48,10 +48,10 @@ class IncludedMapping:
 
 
 class OARepoMappingIncludesState:
-    def __init__(self, app):
+    def __init__(self, app, _includes=None, _handlers=None):
         self.app = app
-        self._includes = None
-        self._handlers = None
+        self._includes = _includes
+        self._handlers = _handlers
 
     @property
     def included_mappings(self):

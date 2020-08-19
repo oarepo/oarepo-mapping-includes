@@ -18,31 +18,40 @@ def process_type(prop, field, includes, add_field=True, root=None, content_point
     # will contain merged parent types
     for mpt in mapping_type:
         # for each of the mapping type
+        processed_types = set()
         while True:
+            if mpt in processed_types:
+                break
+
+            processed_types.add(mpt)
+
             # try to load the type
             mapping = includes.load_type(mpt, content=prop, root=root, content_pointer=content_pointer)
 
-            if mapping:
-
-                # merge into mpt_res, overwriting any previously existing values
-                inherited_merger.merge(prop, mapping)
-
-                # extract the new type
-                new_type = prop.get('type', None)
-                if not new_type:
-                    break
-
-                if mpt == new_type:
-                    raise ValueError('Infinite recursion in type %s detected' % mpt)
-
-                mpt = new_type
-            else:
-                # remember the last extracted type and break
+            if not mapping:
                 break
+
+            # merge into mpt_res, overwriting any previously existing values
+            inherited_merger.merge(prop, mapping)
+
+            # oarepo:type is a special construct to use the type but break recursion
+            new_type = prop.pop('oarepo:type', None)
+            if new_type:
+                prop[field] = new_type
+                break
+
+            # extract the new type
+            new_type = prop.get(field, None)
+            if not new_type:
+                break
+
+            mpt = new_type
 
     # if included mappings do not add type, use the first one in the original type
     if add_field and field not in prop:
         prop[field] = mapping_type[0]
+
+    return prop     # for tests
 
 
 def convert_props(includes, properties, root, content_pointer):
