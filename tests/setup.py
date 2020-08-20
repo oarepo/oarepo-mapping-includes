@@ -9,10 +9,10 @@ setup(
         "invenio_search.mappings": [
             "test = test_module.mappings"
         ],
-        "invenio_oarepo_mapping_includes": [
+        "oarepo_mapping_includes": [
             "test = test_module.mapping_includes"
         ],
-        "invenio_oarepo_mapping_handlers": [
+        "oarepo_mapping_handlers": [
             "dynamic = test_module.mapping_handlers:dynamic",
             "dynamic2 = test_module.mapping_handlers:dynamic2"
         ]

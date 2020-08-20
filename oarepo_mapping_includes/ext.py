@@ -67,7 +67,7 @@ class OARepoMappingIncludesState:
 
     def _load_included_mappings(self):
         included_mappings = {}
-        for ep in iter_entry_points('invenio_oarepo_mapping_includes'):
+        for ep in iter_entry_points('oarepo_mapping_includes'):
             package_name = '{}.v{}'.format(ep.module_name, ES_VERSION[0])
             package_name = package_name.split('.', maxsplit=1)
             package_path = package_name[1].replace('.', '/')
@@ -81,7 +81,7 @@ class OARepoMappingIncludesState:
 
     def _load_mapping_handlers(self):
         handlers = {}
-        for ep in iter_entry_points('invenio_oarepo_mapping_handlers'):
+        for ep in iter_entry_points('oarepo_mapping_handlers'):
             handlers[ep.name] = ep.load()
         return handlers
 
