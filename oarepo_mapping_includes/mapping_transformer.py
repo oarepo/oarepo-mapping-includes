@@ -1,7 +1,10 @@
+import copy
 import json
 import os
 
-from deepmerge import always_merger, conservative_merger
+from deepmerge import conservative_merger
+
+from oarepo_mapping_includes import LoadedMapping
 
 inherited_merger = conservative_merger
 
@@ -31,8 +34,18 @@ def process_type(prop, field, includes, add_field=True, root=None, content_point
             if not mapping:
                 break
 
-            # merge into mpt_res, overwriting any previously existing values
-            inherited_merger.merge(prop, mapping)
+            # if it is an instance of loaded mapping and it already took care of extra data in original,
+            # just replace the original
+            if isinstance(mapping, LoadedMapping) and mapping.replace_original:
+                prop.clear()
+                prop.update(copy.deepcopy(mapping.mapping))
+            else:
+                # otherwise merge with the original
+                if isinstance(mapping, LoadedMapping):
+                    mapping = mapping.mapping
+
+                # merge into mpt_res, overwriting any previously existing values
+                inherited_merger.merge(prop, mapping)
 
             # oarepo:type is a special construct to use the type but break recursion
             new_type = prop.pop('oarepo:type', None)
@@ -51,7 +64,7 @@ def process_type(prop, field, includes, add_field=True, root=None, content_point
     if add_field and field not in prop:
         prop[field] = mapping_type[0]
 
-    return prop     # for tests
+    return prop  # for tests
 
 
 def convert_props(includes, properties, root, content_pointer):
