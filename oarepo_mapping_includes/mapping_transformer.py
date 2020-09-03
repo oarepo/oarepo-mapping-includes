@@ -4,7 +4,7 @@ import os
 
 from deepmerge import conservative_merger
 
-from oarepo_mapping_includes import LoadedMapping
+from oarepo_mapping_includes import Mapping
 
 inherited_merger = conservative_merger
 
@@ -36,12 +36,12 @@ def process_type(prop, field, includes, add_field=True, root=None, content_point
 
             # if it is an instance of loaded mapping and it already took care of extra data in original,
             # just replace the original
-            if isinstance(mapping, LoadedMapping) and mapping.replace_original:
+            if isinstance(mapping, Mapping) and not mapping.merge:
                 prop.clear()
                 prop.update(copy.deepcopy(mapping.mapping))
             else:
                 # otherwise merge with the original
-                if isinstance(mapping, LoadedMapping):
+                if isinstance(mapping, Mapping):
                     mapping = mapping.mapping
 
                 # merge into mpt_res, overwriting any previously existing values

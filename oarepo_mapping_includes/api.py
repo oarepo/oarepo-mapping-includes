@@ -1,4 +1,4 @@
-class LoadedMapping:
-    def __init__(self, mapping, replace_original):
+class Mapping:
+    def __init__(self, mapping, merge=True):
         self.mapping = mapping
-        self.replace_original = replace_original
+        self.merge = merge

@@ -201,6 +201,18 @@ def handler(type=None, resource=None, id=None, json_pointer=None, app=None,
     return {...}
 ```
 
+### Merging and replacing content
+
+The handler can return either a dictionary or an instance of ``oarepo_mapping_includes.Mapping``.
+
+If it returns a dictionary it is merged with the original mapping content 
+(such as extra properties etc.)
+
+If it returns a ``Mapping(mapping=<dict>, merge=True)``, the parameter ``merge`` defines if 
+the original mapping content will be merged in (``True``) or completely replaced (``False``).
+
+This is usable if the handler wants to transform the original content, not simply to merge it.
+
 
   [image]: https://img.shields.io/github/license/oarepo/oarepo-mapping-includes.svg
   [1]: https://github.com/oarepo/oarepo-mapping-includes/blob/master/LICENSE
