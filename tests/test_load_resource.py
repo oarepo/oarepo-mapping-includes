@@ -35,7 +35,7 @@ def test_dynamic_on_type(app):
 def test_not_existing(app):
     includes = app.extensions['oarepo-mapping-includes']
 
-    with pytest.raises(KeyError, match='not-existing not in \\[\'included-v1.0.0.json\'\\]'):
+    with pytest.raises(KeyError, match='not-existing not in \\[\'included-v1.0.0.json\', \'included2-v1.0.0.json\'\\]'):
         includes.load_type('not-existing#blah', content={}, root={}, content_pointer='')
 
 

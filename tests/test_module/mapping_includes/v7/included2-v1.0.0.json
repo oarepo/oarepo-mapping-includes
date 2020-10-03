@@ -1,0 +1,20 @@
+{
+  "a": {
+    "type": "object",
+    "properties": {
+      "d": {
+        "type": "included-v1.0.0.json#/test"
+      }
+    }
+  },
+  "b": {
+    "oarepo:extends": [
+      "included-v1.0.0.json#/nested"
+    ],
+    "properties": {
+      "c": {
+        "type": "string"
+      }
+    }
+  }
+}

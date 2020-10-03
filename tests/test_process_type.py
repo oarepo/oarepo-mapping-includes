@@ -10,10 +10,9 @@ def test_no_type():
             {
                 'string': IncludedMapping('string', {'test': True})
             }, {})
-    ) == {
-               'type': 'string',
+    ) == ({
                'test': True
-           }
+           }, True)
 
 
 def test_infinite_recursion():
@@ -24,10 +23,10 @@ def test_infinite_recursion():
             {
                 'string': IncludedMapping('string', {'test': True, 'type': 'string'})  # infinite recursion on type
             }, {})
-    ) == {
+    ) == ({
                'type': 'string',
                'test': True
-           }
+           }, True)
 
 
 def test_break_recursion():
@@ -40,10 +39,10 @@ def test_break_recursion():
                 'string': IncludedMapping('string', {'test': True, 'oarepo:type': 'string2'}),
                 'string2': IncludedMapping('string', {'test': False})
             }, {})
-    ) == {
+    ) == ({
                'type': 'string2',
                'test': True
-           }
+           }, True)
 
 
 def test_mapping_not_found():
@@ -52,6 +51,6 @@ def test_mapping_not_found():
         OARepoMappingIncludesState(
             None,
             {}, {})
-    ) == {
+    ) == ({
                'type': 'string'
-           }
+           }, False)

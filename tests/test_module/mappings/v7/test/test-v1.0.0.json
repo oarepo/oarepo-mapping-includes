@@ -14,6 +14,12 @@
       "nested": {
         "type": "included-v1.0.0.json#/nested"
       },
+      "a": {
+        "type": "included2-v1.0.0.json#/a"
+      },
+      "b": {
+        "type": "included2-v1.0.0.json#/b"
+      },
       "nested2": {
         "type": "object",
         "properties": {

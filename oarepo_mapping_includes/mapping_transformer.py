@@ -9,19 +9,21 @@ from oarepo_mapping_includes import Mapping
 inherited_merger = conservative_merger
 
 
-def process_type(prop, field, includes, add_field=True, root=None, content_pointer=None):
+def process_type(prop, field, includes, add_field=True, root=None, content_pointer=None, processed_types=None):
     # get the type - it can be a simple type or an array (think of multiple inheritance)
     mapping_type = prop.pop(field, None)
     if not mapping_type:
-        return  # strange, should never happen
+        return prop, False  # strange, should never happen
 
     if not isinstance(mapping_type, list):
         mapping_type = [mapping_type]
 
     # will contain merged parent types
+    modified = False
+    if processed_types is None:
+        processed_types = set()
     for mpt in mapping_type:
         # for each of the mapping type
-        processed_types = set()
         while True:
             if mpt in processed_types:
                 break
@@ -33,6 +35,7 @@ def process_type(prop, field, includes, add_field=True, root=None, content_point
 
             if not mapping:
                 break
+            modified = True
 
             # if it is an instance of loaded mapping and it already took care of extra data in original,
             # just replace the original
@@ -61,17 +64,24 @@ def process_type(prop, field, includes, add_field=True, root=None, content_point
             mpt = new_type
 
     # if included mappings do not add type, use the first one in the original type
-    if add_field and field not in prop:
+    if add_field and field not in prop and not modified:
         prop[field] = mapping_type[0]
 
-    return prop  # for tests
+    return prop, modified  # prop is for tests
 
 
 def convert_props(includes, properties, root, content_pointer):
     # for each property, update its type and definition if needed
     for name, prop in properties.items():
         prop_pointer = content_pointer + '/' + name
-        process_type(prop, 'type', includes, True, root, prop_pointer)
+        for i in range(100):
+            modified = process_type(prop, 'oarepo:extends', includes, False, root=root, content_pointer=prop_pointer)[1]
+            modified = process_type(prop, 'type', includes, True, root, prop_pointer)[1] or modified
+            if not modified:
+                break
+        else:
+            raise Exception('Infinite recursion in mapping type at path %s' % content_pointer)
+
         # and go recursively
         convert_props(includes, prop.get('properties', {}), root, prop_pointer + '/properties')
         convert_props(includes, prop.get('fields', {}), root, prop_pointer + '/fields')
@@ -82,9 +92,10 @@ def convert_extends(includes, el, root, content_pointer):
         if not isinstance(prop, dict):
             continue
         prop_pointer = content_pointer + '/' + name
-        process_type(prop, 'oarepo:extends', includes, False, root=root, content_pointer=prop_pointer)
-        # and go recursively
-        convert_extends(includes, prop, root, prop_pointer)
+        while process_type(prop, 'oarepo:extends', includes, False, root=root, content_pointer=prop_pointer)[1]:
+            pass
+        # no need to go recursively as it is called in convert_props as well
+        # convert_extends(includes, prop, root, prop_pointer)
 
 
 def process(includes, base_dir, filename):
