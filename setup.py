@@ -8,17 +8,19 @@ readme = open('README.md').read()
 
 install_requires = [
     'elasticsearch',
-    'requests',
     'deepmerge'
 ]
 
 tests_require = [
-    'invenio[base,metadata,sqlite,elasticsearch7]',
-    'pytest',
-    'pytest-cov',
-    'pytest-pep8',
     'requests-mock'
 ]
+
+extras_require = {
+    'tests': [
+        *tests_require,
+        'oarepo[tests]',
+    ]
+}
 
 g = {}
 with open(os.path.join('oarepo_mapping_includes', 'version.py'), 'rt') as fp:
@@ -49,9 +51,7 @@ setup(
     setup_requires=install_requires,
     install_requires=install_requires,
     tests_require=tests_require,
-    extras_require={
-        'tests': tests_require
-    },
+    extras_require=extras_require,
     platforms='any',
     classifiers=[
         'Environment :: Web Environment',
