@@ -13,3 +13,4 @@ exclude tests
 include *.rst
 
 recursive-include invenio_oarepo_mapping_includes *.py
+recursive-exclude tests *.json
