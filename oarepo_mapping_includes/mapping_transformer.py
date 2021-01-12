@@ -11,61 +11,67 @@ inherited_merger = conservative_merger
 
 def process_type(prop, field, includes, add_field=True, root=None, content_pointer=None, processed_types=None):
     # get the type - it can be a simple type or an array (think of multiple inheritance)
-    mapping_type = prop.pop(field, None)
-    if not mapping_type:
+    mapping_types = prop.pop(field, None)
+    if not mapping_types:
         return prop, False  # strange, should never happen
 
-    if not isinstance(mapping_type, list):
-        mapping_type = [mapping_type]
+    if not isinstance(mapping_types, list):
+        mapping_types = [mapping_types]
 
     # will contain merged parent types
     modified = False
     if processed_types is None:
         processed_types = set()
-    for mpt in mapping_type:
+
+    orig_mapping_types = [*mapping_types]
+
+    while mapping_types:
+        mpt = mapping_types.pop(0)
         # for each of the mapping type
-        while True:
-            if mpt in processed_types:
-                break
+        if mpt in processed_types:
+            continue
 
-            processed_types.add(mpt)
+        processed_types.add(mpt)
 
-            # try to load the type
-            mapping = includes.load_type(mpt, content=prop, root=root, content_pointer=content_pointer)
+        # try to load the type
+        mapping = includes.load_type(mpt, content=prop, root=root, content_pointer=content_pointer)
 
-            if not mapping:
-                break
-            modified = True
+        if not mapping:
+            continue
+        modified = True
 
-            # if it is an instance of loaded mapping and it already took care of extra data in original,
-            # just replace the original
-            if isinstance(mapping, Mapping) and not mapping.merge:
-                prop.clear()
-                prop.update(copy.deepcopy(mapping.mapping))
-            else:
-                # otherwise merge with the original
-                if isinstance(mapping, Mapping):
-                    mapping = mapping.mapping
+        # if it is an instance of loaded mapping and it already took care of extra data in original,
+        # just replace the original
+        if isinstance(mapping, Mapping) and not mapping.merge:
+            prop.clear()
+            prop.update(copy.deepcopy(mapping.mapping))
+        else:
+            # otherwise merge with the original
+            if isinstance(mapping, Mapping):
+                mapping = mapping.mapping
 
-                # merge into mpt_res, overwriting any previously existing values
-                inherited_merger.merge(prop, mapping)
+            # merge into mpt_res, overwriting any previously existing values
+            inherited_merger.merge(prop, mapping)
 
-            # oarepo:type is a special construct to use the type but break recursion
-            new_type = prop.pop('oarepo:type', None)
-            if new_type:
-                prop[field] = new_type
-                break
+        # oarepo:type is a special construct to use the type but break recursion
+        new_type = prop.pop('oarepo:type', None)
+        if new_type:
+            prop[field] = new_type
+            continue
 
-            # extract the new type
-            new_type = prop.get(field, None)
-            if not new_type:
-                break
+        # extract the new type
+        new_type = prop.get(field, None)
+        if not new_type:
+            continue
 
-            mpt = new_type
+        mpt = new_type
+        if not isinstance(mpt, (tuple, list)):
+            mpt = [mpt]
+        mapping_types = mpt + mapping_types
 
     # if included mappings do not add type, use the first one in the original type
     if add_field and field not in prop and not modified:
-        prop[field] = mapping_type[0]
+        prop[field] = orig_mapping_types[0]
 
     return prop, modified  # prop is for tests
 
@@ -92,8 +98,9 @@ def convert_extends(includes, el, root, content_pointer):
         if not isinstance(prop, dict):
             continue
         prop_pointer = content_pointer + '/' + name
-        while process_type(prop, 'oarepo:extends', includes, False, root=root, content_pointer=prop_pointer)[1]:
-            pass
+
+        process_type(prop, 'oarepo:extends', includes, False, root=root, content_pointer=prop_pointer)
+        prop.pop('oarepo:extends', None)
         # no need to go recursively as it is called in convert_props as well
         # convert_extends(includes, prop, root, prop_pointer)
 
