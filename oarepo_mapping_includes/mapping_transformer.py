@@ -79,8 +79,18 @@ def process_type(prop, field, includes, add_field=True, root=None, content_point
 
 def convert_props(includes, properties, root, content_pointer):
     # for each property, update its type and definition if needed
+    if 'oarepo:extends' in properties:
+        for i in range(100):
+            modified = process_type(properties, 'oarepo:extends', includes, False,
+                         root=root, content_pointer=content_pointer)[1]
+            if not modified:
+                break
+
     for name, prop in properties.items():
         prop_pointer = content_pointer + '/' + name
+        if isinstance(prop, str):
+            continue
+
         for i in range(100):
             modified = process_type(prop, 'oarepo:extends', includes, False, root=root, content_pointer=prop_pointer)[1]
             modified = process_type(prop, 'type', includes, True, root, prop_pointer)[1] or modified

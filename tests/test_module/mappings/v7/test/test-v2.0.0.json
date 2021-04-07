@@ -1,0 +1,13 @@
+{
+  "aliases": {
+    "nr-all": {}
+  },
+  "mappings": {
+    "date_detection": false,
+    "numeric_detection": false,
+    "dynamic": false,
+    "properties": {
+      "oarepo:extends": "included-v2.0.0.json#/mappings/properties"
+    }
+  }
+}
