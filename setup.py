@@ -8,7 +8,8 @@ readme = open('README.md').read()
 
 install_requires = [
     'elasticsearch',
-    'deepmerge'
+    'deepmerge',
+    'NamedAtomicLock'
 ]
 
 tests_require = [

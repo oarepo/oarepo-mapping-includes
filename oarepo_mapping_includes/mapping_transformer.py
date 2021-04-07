@@ -2,6 +2,7 @@ import copy
 import json
 import os
 
+from NamedAtomicLock import NamedAtomicLock
 from deepmerge import conservative_merger
 
 from oarepo_mapping_includes import Mapping
@@ -112,8 +113,15 @@ def process(includes, base_dir, filename):
         mapping = json.load(f)
     convert_extends(includes, mapping, root=mapping, content_pointer='')
     convert_props(includes, mapping['mappings']['properties'], mapping, '/mappings/properties')
+    mapping_to_save = json.dumps(mapping, ensure_ascii=False, indent=4)
+    if os.path.exists(dest_file):
+        with open(dest_file, 'r') as f:
+            existing = f.read()
+            if existing == mapping_to_save:
+                # do not save again the same data
+                return dest_file
     with open(dest_file, 'w') as f:
-        json.dump(mapping, f, ensure_ascii=False, indent=4)
+        f.write(mapping_to_save)
 
     return dest_file
 
@@ -122,11 +130,16 @@ def mapping_transformer(source, app=None, **kwargs):
     includes = app.extensions['oarepo-mapping-includes']
     mappings = app.extensions['invenio-search'].mappings
 
-    # create cache directory
-    transformed_mappings_dir = os.path.join(app.instance_path, 'mappings')
-    if not os.path.exists(transformed_mappings_dir):
-        os.makedirs(transformed_mappings_dir)
+    lock = NamedAtomicLock('oarepo-mapping-includes')
+    lock.acquire()
+    try:
+        # create cache directory
+        transformed_mappings_dir = os.path.join(app.instance_path, 'mappings')
+        if not os.path.exists(transformed_mappings_dir):
+            os.makedirs(transformed_mappings_dir)
 
-    # and transform each mapping
-    for k, v in list(mappings.items()):
-        mappings[k] = process(includes, transformed_mappings_dir, v)
+        # and transform each mapping
+        for k, v in list(mappings.items()):
+            mappings[k] = process(includes, transformed_mappings_dir, v)
+    finally:
+        lock.release()
